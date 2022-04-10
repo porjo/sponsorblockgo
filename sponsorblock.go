@@ -17,6 +17,737 @@ import (
 	"github.com/deepmap/oapi-codegen/pkg/runtime"
 )
 
+const (
+	PrivateAdminUserIDScopes = "privateAdminUserID.Scopes"
+	PrivateUserIDScopes      = "privateUserID.Scopes"
+)
+
+// Defines values for ActionType.
+const (
+	ActionTypeMute ActionType = "mute"
+
+	ActionTypeSkip ActionType = "skip"
+)
+
+// Defines values for Category.
+const (
+	CategoryInteraction Category = "interaction"
+
+	CategoryIntro Category = "intro"
+
+	CategoryMusicOfftopic Category = "music_offtopic"
+
+	CategoryOutro Category = "outro"
+
+	CategoryPoiHighlight Category = "poi_highlight"
+
+	CategoryPreview Category = "preview"
+
+	CategorySelfpromo Category = "selfpromo"
+
+	CategorySponsor Category = "sponsor"
+)
+
+// Defines values for DbSegmentHidden.
+const (
+	DbSegmentHiddenN0 DbSegmentHidden = 0
+
+	DbSegmentHiddenN1 DbSegmentHidden = 1
+)
+
+// Defines values for DbSegmentLocked.
+const (
+	DbSegmentLockedN0 DbSegmentLocked = 0
+
+	DbSegmentLockedN1 DbSegmentLocked = 1
+)
+
+// Defines values for DbSegmentShadowHidden.
+const (
+	DbSegmentShadowHiddenN0 DbSegmentShadowHidden = 0
+
+	DbSegmentShadowHiddenN1 DbSegmentShadowHidden = 1
+)
+
+// Defines values for LockReasonLocked.
+const (
+	LockReasonLockedN0 LockReasonLocked = 0
+
+	LockReasonLockedN1 LockReasonLocked = 1
+)
+
+// Defines values for Services.
+const (
+	ServicesYouTube Services = "YouTube"
+)
+
+// Defines values for SkipSegmentLocked.
+const (
+	SkipSegmentLockedN0 SkipSegmentLocked = 0
+
+	SkipSegmentLockedN1 SkipSegmentLocked = 1
+)
+
+// Defines values for Service.
+const (
+	YouTube Service = "YouTube"
+)
+
+// Defines values for SubmitActionType.
+const (
+	Mute SubmitActionType = "mute"
+
+	Skip SubmitActionType = "skip"
+)
+
+// Defines values for SubmitCategory.
+const (
+	Filler SubmitCategory = "filler"
+
+	Interaction SubmitCategory = "interaction"
+
+	Intro SubmitCategory = "intro"
+
+	MusicOfftopic SubmitCategory = "music_offtopic"
+
+	Outro SubmitCategory = "outro"
+
+	PoiHighlight SubmitCategory = "poi_highlight"
+
+	Preview SubmitCategory = "preview"
+
+	Selfpromo SubmitCategory = "selfpromo"
+
+	Sponsor SubmitCategory = "sponsor"
+)
+
+// 403 Error when non-VIP users access VIP endpoints
+type N403VIP struct {
+	Message *string `json:"message,omitempty"`
+}
+
+// possible action types
+type ActionType string
+
+// Segment Category
+type Category string
+
+// Segment as-is in DB
+type DbSegment struct {
+	UUID *SegmentUUID `json:"UUID,omitempty"`
+
+	// possible action types
+	ActionType *ActionType `json:"actionType,omitempty"`
+
+	// Segment Category
+	Category *Category `json:"category,omitempty"`
+
+	// end time of segment
+	EndTime *float32 `json:"endTime,omitempty"`
+
+	// Full hash of videoID
+	HashedVideoID *VideoIDHash `json:"hashedVideoID,omitempty"`
+
+	// If segment is hidden
+	Hidden *DbSegmentHidden `json:"hidden,omitempty"`
+
+	// Number of incorrect votes
+	IncorrectVotes *int `json:"incorrectVotes,omitempty"`
+
+	// If segment is locked
+	Locked *DbSegmentLocked `json:"locked,omitempty"`
+
+	// Reputation of submitter at time of submission
+	Reputation *float32 `json:"reputation,omitempty"`
+
+	// Supported services
+	Service *Services `json:"service,omitempty"`
+
+	// If submitter is shadowbanned
+	ShadowHidden *DbSegmentShadowHidden `json:"shadowHidden,omitempty"`
+
+	// start time of segment
+	StartTime *float32 `json:"startTime,omitempty"`
+
+	// Time of submission (epoch ms)
+	TimeSubmitted *int `json:"timeSubmitted,omitempty"`
+
+	// userAgent of submitter
+	UserAgent *string `json:"userAgent,omitempty"`
+
+	// Public userID (private userID hashed 5000 times)
+	UserID *PublicUserID `json:"userID,omitempty"`
+
+	// Duration of video at time of submission.
+	VideoDuration *VideoDuration `json:"videoDuration,omitempty"`
+
+	// ID of video
+	VideoID *VideoID `json:"videoID,omitempty"`
+
+	// Number of reported views on segment
+	Views *int `json:"views,omitempty"`
+
+	// votes on segment
+	Votes *int `json:"votes,omitempty"`
+}
+
+// If segment is hidden
+type DbSegmentHidden int
+
+// If segment is locked
+type DbSegmentLocked int
+
+// If submitter is shadowbanned
+type DbSegmentShadowHidden int
+
+// Privacy preserving skip segments
+type HashSkipSegment []struct {
+	// Full hash of videoID
+	Hash     *VideoIDHash `json:"hash,omitempty"`
+	Segments *SkipSegment `json:"segments,omitempty"`
+
+	// ID of video
+	VideoID *VideoID `json:"videoID,omitempty"`
+}
+
+// Parameter does not match format requirements (Bad JSON or not an arrya)
+type InvalidParameter string
+
+// VIP specified lock reason
+type LockReason struct {
+	// Segment Category
+	Category *Category `json:"category,omitempty"`
+
+	// Status of lockStatusk of category
+	Locked *LockReasonLocked `json:"locked,omitempty"`
+
+	// VIP specified lock reason
+	Reason *string `json:"reason"`
+
+	// Public userID (private userID hashed 5000 times)
+	UserID *PublicUserID `json:"userID,omitempty"`
+
+	// Username of locking VIP
+	UserName *string `json:"userName"`
+}
+
+// Status of lockStatusk of category
+type LockReasonLocked int
+
+// private userID when not used in query parameter
+type PrivateUserID string
+
+// Public userID (private userID hashed 5000 times)
+type PublicUserID string
+
+// Single search segment
+type SearchSegment struct {
+	UUID *SegmentUUID `json:"UUID,omitempty"`
+
+	// possible action types
+	ActionType *ActionType `json:"actionType,omitempty"`
+
+	// Segment Category
+	Category *Category `json:"category,omitempty"`
+
+	// end time of segment
+	EndTime *float32 `json:"endTime,omitempty"`
+
+	// If segment is hidden
+	Hidden *bool `json:"hidden,omitempty"`
+
+	// If segment is locked
+	Locked *bool `json:"locked,omitempty"`
+
+	// If submitter is shadowbanned
+	Shadowhidden *bool `json:"shadowhidden,omitempty"`
+
+	// start time of segment
+	StartTime *float32 `json:"startTime,omitempty"`
+
+	// Time submitted (ms epoch)
+	TimeSubmitted *int `json:"timeSubmitted,omitempty"`
+
+	// Reported views on segment
+	Views *int `json:"views,omitempty"`
+
+	// votes on segment
+	Votes *string `json:"votes,omitempty"`
+}
+
+// SegmentUUID defines model for segmentUUID.
+type SegmentUUID string
+
+// Supported services
+type Services string
+
+// SkipSegment defines model for skipSegment.
+type SkipSegment struct {
+	UUID *SegmentUUID `json:"UUID,omitempty"`
+
+	// possible action types
+	ActionType *ActionType `json:"actionType,omitempty"`
+
+	// Segment Category
+	Category *Category `json:"category,omitempty"`
+
+	// Unused
+	Description *string `json:"description"`
+
+	// If segment is locked
+	Locked *SkipSegmentLocked `json:"locked,omitempty"`
+
+	// start and end time in seconds
+	Segment *[]float32 `json:"segment,omitempty"`
+
+	// Public userID (private userID hashed 5000 times)
+	UserID *PublicUserID `json:"userID,omitempty"`
+
+	// Duration of video at time of submission.
+	VideoDuration *VideoDuration `json:"videoDuration,omitempty"`
+
+	// Votes on segment on the segment
+	Votes *float32 `json:"votes,omitempty"`
+}
+
+// If segment is locked
+type SkipSegmentLocked int
+
+// StatusResponse defines model for statusResponse.
+type StatusResponse struct {
+	Commit *interface{} `json:"commit,omitempty"`
+
+	// Current database version
+	Db *int `json:"db,omitempty"`
+
+	// ms between startTime and sending response
+	ProcessTime *int `json:"processTime,omitempty"`
+
+	// Unix (ms) time that request was recieved
+	StartTime *int `json:"startTime,omitempty"`
+
+	// Uptime in seconds
+	Uptime *int `json:"uptime,omitempty"`
+}
+
+// Object of segment to submit
+type SubmitSegment struct {
+	// possible action types
+	ActionType *ActionType `json:"actionType,omitempty"`
+
+	// Segment Category
+	Category Category `json:"category"`
+
+	// start and end time in seconds
+	Segment []float32 `json:"segment"`
+}
+
+// Response from userStats
+type UserStats struct {
+	ActionTypeCount *interface{} `json:"actionTypeCount,omitempty"`
+	CategoryCount   *interface{} `json:"categoryCount,omitempty"`
+	MinutesSaved    *int         `json:"minutesSaved,omitempty"`
+	SegmentCount    *int         `json:"segmentCount,omitempty"`
+
+	// Public userID (private userID hashed 5000 times)
+	UserID *PublicUserID `json:"userID,omitempty"`
+
+	// user name
+	UserName *string `json:"userName,omitempty"`
+}
+
+// Duration of video at time of submission.
+type VideoDuration float32
+
+// ID of video
+type VideoID string
+
+// Full hash of videoID
+type VideoIDHash string
+
+// VideoLock defines model for videoLock.
+type VideoLock struct {
+	Categories *[]Category `json:"categories,omitempty"`
+
+	// Specified reason for lock
+	Reason *string `json:"reason,omitempty"`
+
+	// Supported services
+	Service *Services `json:"service,omitempty"`
+}
+
+// UUID defines model for UUID.
+type UUID string
+
+// RequiredSegment defines model for requiredSegment.
+type RequiredSegment []string
+
+// RequiredVideoID defines model for requiredVideoID.
+type RequiredVideoID string
+
+// Service defines model for service.
+type Service string
+
+// Sha256HashPrefix defines model for sha256HashPrefix.
+type Sha256HashPrefix string
+
+// SubmitActionType defines model for submitActionType.
+type SubmitActionType string
+
+// SubmitCategory defines model for submitCategory.
+type SubmitCategory string
+
+// PostadduserasvipParams defines parameters for Postadduserasvip.
+type PostadduserasvipParams struct {
+	// Public userID of user to add to VIP list
+	UserID string `json:"userID"`
+
+	// enable or disable user
+	Enabled *bool `json:"enabled,omitempty"`
+}
+
+// PostClearCacheParams defines parameters for PostClearCache.
+type PostClearCacheParams struct {
+	// ID of video
+	VideoID RequiredVideoID `json:"videoID"`
+
+	// Service to target - See https://wiki.sponsor.ajay.app/w/Types#Service
+	Service PostClearCacheParamsService `json:"service"`
+}
+
+// PostClearCacheParamsService defines parameters for PostClearCache.
+type PostClearCacheParamsService string
+
+// GetTopUsersParams defines parameters for GetTopUsers.
+type GetTopUsersParams struct {
+	// 0 for by minutes saved, 1 for by view count, 2 for by total submissions
+	SortType GetTopUsersParamsSortType `json:"sortType"`
+}
+
+// GetTopUsersParamsSortType defines parameters for GetTopUsers.
+type GetTopUsersParamsSortType int
+
+// GetTotalStatsParams defines parameters for GetTotalStats.
+type GetTotalStatsParams struct {
+	// Include contributing users
+	CountContributingUsers *bool `json:"countContributingUsers,omitempty"`
+}
+
+// DeleteLockCategoriesParams defines parameters for DeleteLockCategories.
+type DeleteLockCategoriesParams struct {
+	// ID of video
+	VideoID RequiredVideoID `json:"videoID"`
+
+	// Array of categories - See https://wiki.sponsor.ajay.app/w/Types#Category
+	Category Category `json:"category"`
+}
+
+// DeleteLockCategoriesParamsCategory defines parameters for DeleteLockCategories.
+type DeleteLockCategoriesParamsCategory string
+
+// GetLockCategoriesParams defines parameters for GetLockCategories.
+type GetLockCategoriesParams struct {
+	// ID of video
+	VideoID RequiredVideoID `json:"videoID"`
+}
+
+// PostLockCategoriesParams defines parameters for PostLockCategories.
+type PostLockCategoriesParams struct {
+	// ID of video
+	VideoID RequiredVideoID `json:"videoID"`
+
+	// Array of categories - See https://wiki.sponsor.ajay.app/w/Types#Category
+	Category Category `json:"category"`
+
+	// Lock reason
+	Reason *string `json:"reason,omitempty"`
+}
+
+// PostLockCategoriesParamsCategory defines parameters for PostLockCategories.
+type PostLockCategoriesParamsCategory string
+
+// GetLockReasonParams defines parameters for GetLockReason.
+type GetLockReasonParams struct {
+	// ID of video
+	VideoID RequiredVideoID `json:"videoID"`
+
+	// categories to get reasons for
+	Category *GetLockReasonParamsCategory `json:"category,omitempty"`
+}
+
+// GetLockReasonParamsCategory defines parameters for GetLockReason.
+type GetLockReasonParamsCategory []interface{}
+
+// PostPurgeAllSegmentsParams defines parameters for PostPurgeAllSegments.
+type PostPurgeAllSegmentsParams struct {
+	// ID of video
+	VideoID RequiredVideoID `json:"videoID"`
+
+	// Service to target - See https://wiki.sponsor.ajay.app/w/Types#Service
+	Service PostPurgeAllSegmentsParamsService `json:"service"`
+}
+
+// PostPurgeAllSegmentsParamsService defines parameters for PostPurgeAllSegments.
+type PostPurgeAllSegmentsParamsService string
+
+// GetSearchSegmentsParams defines parameters for GetSearchSegments.
+type GetSearchSegmentsParams struct {
+	// ID of video
+	VideoID RequiredVideoID `json:"videoID"`
+
+	// Array of categories - See https://wiki.sponsor.ajay.app/w/Types#Category
+	Category Category `json:"category"`
+
+	// multiple action types - Options are skip, mute
+	ActionType ActionType `json:"actionType"`
+
+	// Service to target - See https://wiki.sponsor.ajay.app/w/Types#Service
+	Service GetSearchSegmentsParamsService `json:"service"`
+
+	// Page to start from (0 indexed)
+	Page *int `json:"page,omitempty"`
+
+	// Lower vote threshold
+	MinVotes *int `json:"minVotes,omitempty"`
+
+	// Upper vote threshold
+	MaxVotes *int `json:"maxVotes,omitempty"`
+
+	// Lower view threshold
+	MinViews *int `json:"minViews,omitempty"`
+
+	// Upper view threshold
+	MaxViews *int `json:"maxViews,omitempty"`
+
+	// Show locked segments
+	Locked *bool `json:"locked,omitempty"`
+
+	// Show hidden segments
+	Hidden *bool `json:"hidden,omitempty"`
+
+	// Show ignored segments
+	Ignored *bool `json:"ignored,omitempty"`
+}
+
+// GetSearchSegmentsParamsCategory defines parameters for GetSearchSegments.
+type GetSearchSegmentsParamsCategory string
+
+// GetSearchSegmentsParamsActionType defines parameters for GetSearchSegments.
+type GetSearchSegmentsParamsActionType string
+
+// GetSearchSegmentsParamsService defines parameters for GetSearchSegments.
+type GetSearchSegmentsParamsService string
+
+// GetSegmentInfoParams defines parameters for GetSegmentInfo.
+type GetSegmentInfoParams struct {
+	// Target segment UUID
+	UUID *string `json:"UUID,omitempty"`
+
+	// Array of UUID
+	UUIDs *[]string `json:"UUIDs,omitempty"`
+}
+
+// SetUsernameParams defines parameters for SetUsername.
+type SetUsernameParams struct {
+	// New Username
+	Username string `json:"username"`
+}
+
+// PostShadowBanUserParams defines parameters for PostShadowBanUser.
+type PostShadowBanUserParams struct {
+	// Public userID of target
+	UserID PublicUserID `json:"userID"`
+
+	// Enable or disable ban
+	Enabled *bool `json:"enabled,omitempty"`
+
+	// Should all previous submissions be banned as well
+	UnHideOldSubmittions *bool `json:"unHideOldSubmittions,omitempty"`
+}
+
+// GetskipsegmentsParams defines parameters for Getskipsegments.
+type GetskipsegmentsParams struct {
+	// ID of video
+	VideoID RequiredVideoID `json:"videoID"`
+
+	// Array of categories - See https://wiki.sponsor.ajay.app/w/Types#Category
+	Category Category `json:"category"`
+
+	// multiple action types - Options are skip, mute
+	ActionType ActionType `json:"actionType"`
+
+	// Segment UUIDs to get regardless of votes
+	RequiredSegment *RequiredSegment `json:"requiredSegment,omitempty"`
+
+	// Service to target - See https://wiki.sponsor.ajay.app/w/Types#Service
+	Service GetskipsegmentsParamsService `json:"service"`
+}
+
+// GetskipsegmentsParamsCategory defines parameters for Getskipsegments.
+type GetskipsegmentsParamsCategory string
+
+// GetskipsegmentsParamsActionType defines parameters for Getskipsegments.
+type GetskipsegmentsParamsActionType string
+
+// GetskipsegmentsParamsService defines parameters for Getskipsegments.
+type GetskipsegmentsParamsService string
+
+// PostSkipSegmentsJSONBody defines parameters for PostSkipSegments.
+type PostSkipSegmentsJSONBody struct {
+	Segments []SubmitSegment `json:"segments"`
+
+	// Supported services
+	Service   *Services `json:"service,omitempty"`
+	UserAgent string    `json:"userAgent"`
+
+	// Duration of video, will attempt to retrieve from YT API if missing. Used to determine when a submission is out of date
+	VideoDuration *float32 `json:"videoDuration,omitempty"`
+
+	// ID of video
+	VideoID string `json:"videoID"`
+}
+
+// PostSkipSegmentsParams defines parameters for PostSkipSegments.
+type PostSkipSegmentsParams struct {
+	// ID of video
+	VideoID RequiredVideoID `json:"videoID"`
+
+	// user agent of submitter
+	UserAgent string `json:"userAgent"`
+
+	// Service to target - See https://wiki.sponsor.ajay.app/w/Types#Service
+	Service PostSkipSegmentsParamsService `json:"service"`
+
+	// duration of video, will attempt to retrieve from YT API if missing. Used to determine when a submission is out of date
+	VideoDuration *float32 `json:"videoDuration,omitempty"`
+
+	// Action type
+	ActionType PostSkipSegmentsParamsActionType `json:"actionType"`
+
+	// Segment Category - See https://wiki.sponsor.ajay.app/w/Types#Category
+	Category PostSkipSegmentsParamsCategory `json:"category"`
+
+	// Start time of segment
+	StartTime float32 `json:"startTime"`
+
+	// End time of segment
+	EndTime float32 `json:"endTime"`
+}
+
+// PostSkipSegmentsParamsService defines parameters for PostSkipSegments.
+type PostSkipSegmentsParamsService string
+
+// PostSkipSegmentsParamsActionType defines parameters for PostSkipSegments.
+type PostSkipSegmentsParamsActionType string
+
+// PostSkipSegmentsParamsCategory defines parameters for PostSkipSegments.
+type PostSkipSegmentsParamsCategory string
+
+// GetSkipSegmentsByHashParams defines parameters for GetSkipSegmentsByHash.
+type GetSkipSegmentsByHashParams struct {
+	// Array of categories - See https://wiki.sponsor.ajay.app/w/Types#Category
+	Category Category `json:"category"`
+
+	// Segment UUIDs to get regardless of votes
+	RequiredSegment *RequiredSegment `json:"requiredSegment,omitempty"`
+
+	// multiple action types - Options are skip, mute
+	ActionType ActionType `json:"actionType"`
+
+	// Service to target - See https://wiki.sponsor.ajay.app/w/Types#Service
+	Service GetSkipSegmentsByHashParamsService `json:"service"`
+}
+
+// GetSkipSegmentsByHashParamsCategory defines parameters for GetSkipSegmentsByHash.
+type GetSkipSegmentsByHashParamsCategory string
+
+// GetSkipSegmentsByHashParamsActionType defines parameters for GetSkipSegmentsByHash.
+type GetSkipSegmentsByHashParamsActionType string
+
+// GetSkipSegmentsByHashParamsService defines parameters for GetSkipSegmentsByHash.
+type GetSkipSegmentsByHashParamsService string
+
+// GetUserIDParams defines parameters for GetUserID.
+type GetUserIDParams struct {
+	// Search string for username. Case sensitive. Minimum for non-exact is 3 characters, maximum is 64 characters
+	Username string `json:"username"`
+
+	// Searches for exact username with no wildcard
+	Exact *bool `json:"exact,omitempty"`
+}
+
+// GetUserInfoParams defines parameters for GetUserInfo.
+type GetUserInfoParams struct {
+	// public userID of user to lookup
+	PublicUserID *string `json:"publicUserID,omitempty"`
+
+	// Private userID
+	UserID *string `json:"userID,omitempty"`
+
+	// Values to get from userInfo
+	Value *GetUserInfoParamsValue `json:"value,omitempty"`
+}
+
+// GetUserInfoParamsValue defines parameters for GetUserInfo.
+type GetUserInfoParamsValue []string
+
+// GetUserStatsParams defines parameters for GetUserStats.
+type GetUserStatsParams struct {
+	// Public userID of target
+	UserID PublicUserID `json:"userID"`
+
+	// display category stats
+	FetchCategoryStats *bool `json:"fetchCategoryStats,omitempty"`
+
+	// display type stats
+	FetchActionTypeStats *string `json:"fetchActionTypeStats,omitempty"`
+}
+
+// PostViewedVideoSponsorTimeParams defines parameters for PostViewedVideoSponsorTime.
+type PostViewedVideoSponsorTimeParams struct {
+	// UUID of target segment
+	UUID UUID `json:"UUID"`
+}
+
+// PostVoteOnSponsorTimeParams defines parameters for PostVoteOnSponsorTime.
+type PostVoteOnSponsorTimeParams struct {
+	// UUID of target segment
+	UUID UUID `json:"UUID"`
+
+	// Vote type - 0 for downvote, 1 for upvote, 20 to undo vote
+	Type *PostVoteOnSponsorTimeParamsType `json:"type,omitempty"`
+
+	// Array of categories - See https://wiki.sponsor.ajay.app/w/Types#Category
+	Category Category `json:"category"`
+}
+
+// PostVoteOnSponsorTimeParamsType defines parameters for PostVoteOnSponsorTime.
+type PostVoteOnSponsorTimeParamsType int
+
+// PostVoteOnSponsorTimeParamsCategory defines parameters for PostVoteOnSponsorTime.
+type PostVoteOnSponsorTimeParamsCategory string
+
+// PostWarnUserJSONBody defines parameters for PostWarnUser.
+type PostWarnUserJSONBody struct {
+	// If warning should be enabled or disabled
+	Enabled *bool `json:"enabled,omitempty"`
+
+	// private userID when not used in query parameter
+	IssuerUserID *PrivateUserID `json:"issuerUserID,omitempty"`
+
+	// Warning reason to display to user
+	Reason *string `json:"reason,omitempty"`
+
+	// Public userID (private userID hashed 5000 times)
+	UserID *PublicUserID `json:"userID,omitempty"`
+}
+
+// PostSkipSegmentsJSONRequestBody defines body for PostSkipSegments for application/json ContentType.
+type PostSkipSegmentsJSONRequestBody PostSkipSegmentsJSONBody
+
+// PostWarnUserJSONRequestBody defines body for PostWarnUser for application/json ContentType.
+type PostWarnUserJSONRequestBody PostWarnUserJSONBody
+
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
 
