@@ -4,7 +4,11 @@
 
 Go client library for the [SponsorBlock API](https://wiki.sponsor.ajay.app/w/API_Docs)
 
-Code is generated using OpenAPI definition file from https://github.com/mchangrh/sb-openapi-source
+Code is generated using OpenAPI definition file from https://github.com/mchangrh/sb-openapi-source:
+
+```
+$ oapi-codegen -generate types,client -package sponsorblockgo openapi.yaml > sponsorblock.go
+```
 
 Library version will reflect version from OpenAPI definition.
 
