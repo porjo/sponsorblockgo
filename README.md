@@ -10,8 +10,6 @@ Code is generated using OpenAPI definition file from https://github.com/mchangrh
 $ oapi-codegen -generate types,client -package sponsorblockgo openapi.yaml > sponsorblock.go
 ```
 
-Library version will reflect version from OpenAPI definition.
-
 ## Usage
 
-See example directory
+See examples directory
