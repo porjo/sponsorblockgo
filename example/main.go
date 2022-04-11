@@ -30,7 +30,6 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
-	// Replace this with a valid Youtube VideoID
 	ssParams := sb.GetskipsegmentsParams{VideoID: sb.RequiredVideoID(*videoID)}
 
 	resp, err := client.GetskipsegmentsWithResponse(ctx, &ssParams)
@@ -44,5 +43,4 @@ func main() {
 	for _, s := range *resp.JSON200 {
 		fmt.Printf("%20f %20f\n", (*s.Segment)[0], (*s.Segment)[1])
 	}
-
 }
